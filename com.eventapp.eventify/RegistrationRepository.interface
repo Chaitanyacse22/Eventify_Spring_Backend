@@ -1,0 +1,9 @@
+package com.eventapp.eventity;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RegistrationRepository extends JpaRepository<EventRegistration, Integer> {
+	List<EventRegistration> findByUserId(int userId);
+}
