@@ -1,0 +1,43 @@
+package com.eventapp.eventity;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface EventRepository extends JpaRepository<Event, Long> {
+	// Query for total registrations per event
+    @Query("SELECT e.id, COUNT(r.id), SUM(e.price) FROM event e LEFT JOIN registration r ON e.id = r.event_id GROUP BY e.id")
+    List<Object[]> findTotalRegistrationsPerEvent();
+
+    // Query for total revenue per event
+    @Query("SELECT e.id, SUM(e.price) FROM event e LEFT JOIN registration r ON e.id = r.event_id GROUP BY e.id")
+    List<Object[]> findTotalRevenuePerEvent();
+    
+    //total revenue for all organizers 
+    @Query("SELECT e.organizer_id, SUM(e.price) " +
+    	       "FROM event e " +
+    	       "LEFT JOIN registration r ON e.id = r.event_id " +
+    	       "GROUP BY e.organizer_id")
+    	List<Object[]> findTotalRevenueForAllOrganizers();
+
+
+    // Query for total revenue for a specific organizer based on organizer_id
+    @Query("SELECT e.organizer_id, SUM(e.price) FROM event e LEFT JOIN registration r ON e.id = r.event_id WHERE e.organizer_id = :organizerId GROUP BY e.organizer_id")
+    List<Object[]> findTotalRevenueByOrganizer(@Param("organizerId") Long organizerId);
+
+    // Custom query to sum the prices for a specific organizer and event type
+    @Query("SELECT SUM(e.price) FROM event e WHERE e.organizer_id = :organizerId AND e.type = :eventType")
+    Double findSumPricesByOrganizerAndEventType(@Param("organizerId") Long organizerId, @Param("eventType") String eventType);
+
+    // Custom query to count registrations on a particular date
+    @Query("SELECT COUNT(r.id) FROM registration r WHERE DATE(r.registration_date) = :registrationDate")
+    Long countRegistrationsByDate(@Param("registrationDate") java.sql.Date registrationDate); // assuming the date is passed as 'YYYY-MM-DD'
+    
+//    //registrations on all dates
+//    @Query("SELECT r.registration_date, COUNT(r.id) FROM Registration r GROUP BY r.registration_date ORDER BY r.registration_date")
+//    List<Object[]> findTotalRegistrationsByDate();
+}
