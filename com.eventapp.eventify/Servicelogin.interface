@@ -1,0 +1,20 @@
+package com.eventapp.eventity;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public interface Servicelogin {
+	
+	String createUser(Login user);
+//    Optional<Login> getUserById(int id);
+	Login getUserById(int id);
+    Login getUserByEmail(String email);
+    List<Login> getAllUsers();
+//    Login updateUser(int id, Login user);
+    Login updateUser(int id, String status);
+    void deleteUser(int id);
+    List<Login> getUserByRole(String role);
+}
